@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <h1> Search Tweets</h1>
+    <br>
+
+        <form method="POST">
+            {% csrf_token %}
+            <input type="input" class="form-control" placeholder="Search Meeps" name="search">
+      
+            <br>
+            <br>
+            <button type="submit" class="btn btn-secondary">Search</button>
+          </form>
+          <br>
+          <br>
+    {% if search %}
+    <center>
+    <h3>You Searched For: {{search}}</h3>
+        <br>
+        <br>
+
+        <div class="col-8">
+    {% for tweet in searched %}
+    
+    <div class="alert alert-dark" role="alert">
+        <div class="container">
+            <div class="row">
+                <div class="col-1">
+                {% if tweet.user.profile.profile_image %}
+                  <img src="{{ tweet.user.profile.profile_image.url}}" width=50 height=50 class="rounded-circle">
+                {% else %}
+                  <img src="{% static 'images/def_pic.png' %}" width=50 height=50 class="img-fluid rounded-start">
+                {% endif %}
+                </div>
+            <div class="col-11">
+                {{tweet.body}}
+                <small class="text-muted">
+                    {{tweet.created_at}} by @{{tweet.user.username}} 
+                    &nbsp;&nbsp;
+                    <div style="float: right;">
+                        {{tweet.number_of_likes}}
+                    {% if user in tweet.likes.all %}
+                        <a href="{% url 'meep_like' tweet.id%}">❤️</a>
+                    {% else %}
+                        <a href="{% url 'meep_like' tweet.id%}">🤍</a> 
+                    {% endif %}
+                    &nbsp;&nbsp;
+                
+                    <a href="{%url 'meep_show' tweet.id%}">💬</a>
+                    {% if request.user.username == tweet.user.username %}
+                    &nbsp;
+                    <a href="{% url 'delete_meep' tweet.id%}">🗑️</a>
+                    &nbsp;
+                    <a href="{% url 'edit_meep' tweet.id%}">📝</a>
+                    {% endif %}
+                    
+                </div>
+                </small>
+            </div> <br>
+
+        </div>
+    </div>
+</div>
+    {% endfor %}
+</div>
+    </center>
+    {%endif%}
+
+<br>
+<br>
+<br>
+{% endblock %}
